@@ -16,6 +16,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using Hpdi.VssPhysicalLib;
 
 namespace Hpdi.VssLogicalLib
@@ -63,7 +64,24 @@ namespace Hpdi.VssLogicalLib
 
         public string DataPath
         {
-            get { return physicalPath + ItemFile.Header.DataExt; }
+            get
+            {
+                var path = physicalPath + ItemFile.Header.DataExt;
+
+                // The data extension is read verbatim from the VSS binary record (e.g.
+                // ".A") and can mismatch the actual on-disk case on a case-sensitive
+                // filesystem. See VssDatabase.GetDataPath for the same issue/fix.
+                if (!OperatingSystem.IsWindows() && !File.Exists(path))
+                {
+                    var lowerPath = physicalPath + ItemFile.Header.DataExt.ToLowerInvariant();
+                    if (File.Exists(lowerPath))
+                    {
+                        return lowerPath;
+                    }
+                }
+
+                return path;
+            }
         }
 
         public int RevisionCount

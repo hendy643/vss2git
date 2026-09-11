@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Vss2Git
+Comment=Migrate a Visual SourceSafe database to Git
+Exec=vss2git-gui
+Icon=io.github.dimitar_grigorov.Vss2Git
+Categories=Development;RevisionControl;
+Terminal=false

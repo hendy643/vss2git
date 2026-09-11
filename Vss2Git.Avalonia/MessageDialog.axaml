@@ -1,0 +1,15 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Hpdi.Vss2Git.Avalonia.MessageDialog"
+        x:Name="Root"
+        Width="480" SizeToContent="Height" MaxHeight="480"
+        WindowStartupLocation="CenterOwner"
+        CanResize="false">
+    <Grid Margin="16" RowDefinitions="*,Auto">
+        <ScrollViewer Grid.Row="0" MaxHeight="320">
+            <TextBlock Name="MessageText" TextWrapping="Wrap" />
+        </ScrollViewer>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right"
+                    Spacing="8" Margin="0,16,0,0" Name="ButtonPanel" />
+    </Grid>
+</Window>

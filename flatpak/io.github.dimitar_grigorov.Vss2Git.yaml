@@ -1,0 +1,48 @@
+app-id: io.github.dimitar_grigorov.Vss2Git
+runtime: org.freedesktop.Platform
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+command: vss2git-gui
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --device=dri
+  - --filesystem=host
+
+modules:
+  - name: vss2git
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/lib/vss2git-gui /app/lib/vss2git-cli
+      - cp -r publish-gui/. /app/lib/vss2git-gui/
+      - cp -r publish-cli/. /app/lib/vss2git-cli/
+      - chmod +x /app/lib/vss2git-gui/Vss2Git.Avalonia /app/lib/vss2git-cli/Vss2Git.Cli
+      - install -Dm755 vss2git-gui /app/bin/vss2git-gui
+      - install -Dm755 vss2git-cli /app/bin/vss2git
+      - install -Dm644 io.github.dimitar_grigorov.Vss2Git.desktop /app/share/applications/io.github.dimitar_grigorov.Vss2Git.desktop
+      - install -Dm644 io.github.dimitar_grigorov.Vss2Git.png /app/share/icons/hicolor/128x128/apps/io.github.dimitar_grigorov.Vss2Git.png
+      - install -Dm644 io.github.dimitar_grigorov.Vss2Git.metainfo.xml /app/share/metainfo/io.github.dimitar_grigorov.Vss2Git.metainfo.xml
+    sources:
+      - type: dir
+        path: publish-gui
+        dest: publish-gui
+      - type: dir
+        path: publish-cli
+        dest: publish-cli
+      - type: file
+        path: io.github.dimitar_grigorov.Vss2Git.desktop
+      - type: file
+        path: io.github.dimitar_grigorov.Vss2Git.png
+      - type: file
+        path: io.github.dimitar_grigorov.Vss2Git.metainfo.xml
+      - type: script
+        dest-filename: vss2git-gui
+        commands:
+          - '#!/bin/sh'
+          - 'exec /app/lib/vss2git-gui/Vss2Git.Avalonia "$@"'
+      - type: script
+        dest-filename: vss2git-cli
+        commands:
+          - '#!/bin/sh'
+          - 'exec /app/lib/vss2git-cli/Vss2Git.Cli "$@"'
