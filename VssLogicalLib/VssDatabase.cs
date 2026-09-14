@@ -182,7 +182,22 @@ namespace Hpdi.VssLogicalLib
 
         internal string GetDataPath(string physicalName)
         {
-            return Path.Combine(Path.Combine(dataPath, physicalName.Substring(0, 1)), physicalName);
+            var path = Path.Combine(Path.Combine(dataPath, physicalName.Substring(0, 1)), physicalName);
+
+            // VSS physical names are canonically uppercase, but on a case-sensitive
+            // filesystem (i.e. not Windows) the on-disk files are sometimes lowercase
+            // (e.g. databases copied/backed up through tools that normalize case).
+            // Fall back to the lowercase form rather than failing outright.
+            if (!OperatingSystem.IsWindows() && !File.Exists(path))
+            {
+                var lowerPath = Path.Combine(Path.Combine(dataPath, physicalName.Substring(0, 1).ToLowerInvariant()), physicalName.ToLowerInvariant());
+                if (File.Exists(lowerPath))
+                {
+                    return lowerPath;
+                }
+            }
+
+            return path;
         }
 
         internal string GetFullName(VssName name)

@@ -7,8 +7,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		Vss2Git.nsi = Vss2Git.nsi
-		build-release.bat = build-release.bat
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vss2Git", "Vss2Git\Vss2Git.csproj", "{381B9665-A55F-4139-9B69-928A08529C6A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VssDump", "VssDump\VssDump.csproj", "{81940BA2-E5D1-4EA5-B183-557579B888E3}"
 EndProject
@@ -29,23 +30,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vss2Git.Cli", "Vss2Git.Cli\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vss2Git.Cli.Tests", "Vss2Git.Cli.Tests\Vss2Git.Cli.Tests.csproj", "{C3223C3D-796E-49AD-A239-B28F517F165E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vss2Git.Tests", "Vss2Git.Tests\Vss2Git.Tests.csproj", "{E3A953FA-91A9-4574-B507-B38382BDE575}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vss2Git.TestDbBuilder", "Vss2Git.TestDbBuilder\Vss2Git.TestDbBuilder.csproj", "{3B1FB169-E1A6-47E4-8F05-D0A37411D557}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vss2Git.IntegrationTests", "Vss2Git.IntegrationTests\Vss2Git.IntegrationTests.csproj", "{EEE4C5AA-6EB1-448A-AD29-FB080C735DEE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vss2Git.Avalonia", "Vss2Git.Avalonia\Vss2Git.Avalonia.csproj", "{7C8AE9C7-D2AC-4A39-8D53-F8B1B2F29459}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Flatpak", "Flatpak", "{82E503F7-A474-485D-AFBA-61E4BC46E585}"
-	ProjectSection(SolutionItems) = preProject
-		flatpak\io.github.dimitar_grigorov.Vss2Git.desktop = flatpak\io.github.dimitar_grigorov.Vss2Git.desktop
-		flatpak\io.github.dimitar_grigorov.Vss2Git.yaml = flatpak\io.github.dimitar_grigorov.Vss2Git.yaml
-		flatpak\io.github.dimitar_grigorov.Vss2Git.metainfo.xml = flatpak\io.github.dimitar_grigorov.Vss2Git.metainfo.xml
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{52A43E95-AA5B-401F-922C-98F689BF36AB}"
-	ProjectSection(SolutionItems) = preProject
-		.github\workflows\release.yml = .github\workflows\release.yml
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +48,18 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{381B9665-A55F-4139-9B69-928A08529C6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{381B9665-A55F-4139-9B69-928A08529C6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{381B9665-A55F-4139-9B69-928A08529C6A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{381B9665-A55F-4139-9B69-928A08529C6A}.Debug|x64.Build.0 = Debug|Any CPU
+		{381B9665-A55F-4139-9B69-928A08529C6A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{381B9665-A55F-4139-9B69-928A08529C6A}.Debug|x86.Build.0 = Debug|Any CPU
+		{381B9665-A55F-4139-9B69-928A08529C6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{381B9665-A55F-4139-9B69-928A08529C6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{381B9665-A55F-4139-9B69-928A08529C6A}.Release|x64.ActiveCfg = Release|Any CPU
+		{381B9665-A55F-4139-9B69-928A08529C6A}.Release|x64.Build.0 = Release|Any CPU
+		{381B9665-A55F-4139-9B69-928A08529C6A}.Release|x86.ActiveCfg = Release|Any CPU
+		{381B9665-A55F-4139-9B69-928A08529C6A}.Release|x86.Build.0 = Release|Any CPU
 		{81940BA2-E5D1-4EA5-B183-557579B888E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{81940BA2-E5D1-4EA5-B183-557579B888E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81940BA2-E5D1-4EA5-B183-557579B888E3}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -153,6 +156,18 @@ Global
 		{C3223C3D-796E-49AD-A239-B28F517F165E}.Release|x64.Build.0 = Release|Any CPU
 		{C3223C3D-796E-49AD-A239-B28F517F165E}.Release|x86.ActiveCfg = Release|Any CPU
 		{C3223C3D-796E-49AD-A239-B28F517F165E}.Release|x86.Build.0 = Release|Any CPU
+		{E3A953FA-91A9-4574-B507-B38382BDE575}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3A953FA-91A9-4574-B507-B38382BDE575}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3A953FA-91A9-4574-B507-B38382BDE575}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E3A953FA-91A9-4574-B507-B38382BDE575}.Debug|x64.Build.0 = Debug|Any CPU
+		{E3A953FA-91A9-4574-B507-B38382BDE575}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E3A953FA-91A9-4574-B507-B38382BDE575}.Debug|x86.Build.0 = Debug|Any CPU
+		{E3A953FA-91A9-4574-B507-B38382BDE575}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3A953FA-91A9-4574-B507-B38382BDE575}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3A953FA-91A9-4574-B507-B38382BDE575}.Release|x64.ActiveCfg = Release|Any CPU
+		{E3A953FA-91A9-4574-B507-B38382BDE575}.Release|x64.Build.0 = Release|Any CPU
+		{E3A953FA-91A9-4574-B507-B38382BDE575}.Release|x86.ActiveCfg = Release|Any CPU
+		{E3A953FA-91A9-4574-B507-B38382BDE575}.Release|x86.Build.0 = Release|Any CPU
 		{3B1FB169-E1A6-47E4-8F05-D0A37411D557}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3B1FB169-E1A6-47E4-8F05-D0A37411D557}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B1FB169-E1A6-47E4-8F05-D0A37411D557}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -192,9 +207,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{82E503F7-A474-485D-AFBA-61E4BC46E585} = {54D377F4-153E-4900-8317-3A1371626EF2}
-		{52A43E95-AA5B-401F-922C-98F689BF36AB} = {54D377F4-153E-4900-8317-3A1371626EF2}
 	EndGlobalSection
 EndGlobal

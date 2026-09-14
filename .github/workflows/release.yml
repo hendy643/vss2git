@@ -12,18 +12,11 @@ on:
         default: '1.1.0'
 
 jobs:
-  build-and-release:
-    runs-on: windows-latest
-
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.VERSION }}
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '10.0.x'
-
     - name: Extract version from tag
       id: get_version
       shell: bash
@@ -36,11 +29,26 @@ jobs:
         echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
         echo "Building version: $VERSION"
 
+  build-windows:
+    needs: version
+    runs-on: windows-latest
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
     - name: Restore dependencies
-      run: dotnet restore Vss2Git.sln
+      run: dotnet restore Vss2Git.Windows.sln
 
     - name: Build solution
-      run: dotnet build Vss2Git.sln --configuration Release --no-restore
+      run: dotnet build Vss2Git.Windows.sln --configuration Release --no-restore
 
     - name: Run tests (excluding integration tests that require VSS tools)
       run: |
@@ -51,7 +59,7 @@ jobs:
       run: |
         dotnet publish Vss2Git.Cli\Vss2Git.Cli.csproj `
           --configuration Release `
-          --output release\Vss2Git.Cli-${{ steps.get_version.outputs.VERSION }}-win-x64 `
+          --output release\Vss2Git.Cli-${{ env.VERSION }}-win-x64 `
           --self-contained false `
           --runtime win-x64
 
@@ -59,24 +67,24 @@ jobs:
       run: |
         dotnet publish Vss2Git\Vss2Git.csproj `
           --configuration Release `
-          --output release\Vss2Git-${{ steps.get_version.outputs.VERSION }}-win-x64 `
+          --output release\Vss2Git-${{ env.VERSION }}-win-x64 `
           --self-contained false `
           --runtime win-x64
 
     - name: Copy documentation to CLI package
       run: |
-        Copy-Item README.md release\Vss2Git.Cli-${{ steps.get_version.outputs.VERSION }}-win-x64\ -ErrorAction SilentlyContinue
-        Copy-Item LICENSE.txt release\Vss2Git.Cli-${{ steps.get_version.outputs.VERSION }}-win-x64\ -ErrorAction SilentlyContinue
+        Copy-Item README.md release\Vss2Git.Cli-${{ env.VERSION }}-win-x64\ -ErrorAction SilentlyContinue
+        Copy-Item LICENSE.txt release\Vss2Git.Cli-${{ env.VERSION }}-win-x64\ -ErrorAction SilentlyContinue
 
     - name: Copy documentation to GUI package
       run: |
-        Copy-Item README.md release\Vss2Git-${{ steps.get_version.outputs.VERSION }}-win-x64\ -ErrorAction SilentlyContinue
-        Copy-Item LICENSE.txt release\Vss2Git-${{ steps.get_version.outputs.VERSION }}-win-x64\ -ErrorAction SilentlyContinue
+        Copy-Item README.md release\Vss2Git-${{ env.VERSION }}-win-x64\ -ErrorAction SilentlyContinue
+        Copy-Item LICENSE.txt release\Vss2Git-${{ env.VERSION }}-win-x64\ -ErrorAction SilentlyContinue
 
     - name: Create ZIP archives
       run: |
-        Compress-Archive -Path release\Vss2Git.Cli-${{ steps.get_version.outputs.VERSION }}-win-x64 -DestinationPath release\Vss2Git.Cli-${{ steps.get_version.outputs.VERSION }}-win-x64.zip
-        Compress-Archive -Path release\Vss2Git-${{ steps.get_version.outputs.VERSION }}-win-x64 -DestinationPath release\Vss2Git-${{ steps.get_version.outputs.VERSION }}-win-x64.zip
+        Compress-Archive -Path release\Vss2Git.Cli-${{ env.VERSION }}-win-x64 -DestinationPath release\Vss2Git.Cli-${{ env.VERSION }}-win-x64.zip
+        Compress-Archive -Path release\Vss2Git-${{ env.VERSION }}-win-x64 -DestinationPath release\Vss2Git-${{ env.VERSION }}-win-x64.zip
 
     - name: Install NSIS
       run: choco install nsis -y
@@ -85,51 +93,162 @@ jobs:
       run: |
         & "C:\Program Files (x86)\NSIS\makensis.exe" Vss2Git.nsi
 
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v2
-      if: startsWith(github.ref, 'refs/tags/')
-      with:
-        files: |
-          release/*.zip
-          Vss2GitSetup-*.exe
-        draft: false
-        prerelease: false
-        generate_release_notes: true
-        body: |
-          ## Vss2Git v${{ steps.get_version.outputs.VERSION }}
-
-          ### Downloads
-          - **Vss2GitSetup-${{ steps.get_version.outputs.VERSION }}.exe** - Windows installer (GUI + CLI, checks for .NET 10.0)
-          - **Vss2Git.Cli-${{ steps.get_version.outputs.VERSION }}-win-x64.zip** - Command-line interface (portable ZIP)
-          - **Vss2Git-${{ steps.get_version.outputs.VERSION }}-win-x64.zip** - Windows GUI application (portable ZIP)
-
-          ### Requirements
-          - [.NET 10.0 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) (Windows x64)
-          - Git must be in PATH (for Process backend)
-
-          ### Installation
-          **Installer:** Run `Vss2GitSetup-${{ steps.get_version.outputs.VERSION }}.exe` — choose GUI, CLI, or both.
-
-          **Portable:** Extract the ZIP and run `Vss2Git.Cli.exe --help` for CLI or `Vss2Git.exe` for GUI.
-
-          See [README.md](https://github.com/${{ github.repository }}/blob/master/README.md) for usage instructions.
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Upload CLI artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Vss2Git.Cli-${{ steps.get_version.outputs.VERSION }}-win-x64
-        path: release/Vss2Git.Cli-${{ steps.get_version.outputs.VERSION }}-win-x64.zip
+        name: Vss2Git.Cli-${{ env.VERSION }}-win-x64
+        path: release/Vss2Git.Cli-${{ env.VERSION }}-win-x64.zip
 
     - name: Upload GUI artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Vss2Git-${{ steps.get_version.outputs.VERSION }}-win-x64
-        path: release/Vss2Git-${{ steps.get_version.outputs.VERSION }}-win-x64.zip
+        name: Vss2Git-${{ env.VERSION }}-win-x64
+        path: release/Vss2Git-${{ env.VERSION }}-win-x64.zip
 
     - name: Upload installer artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Vss2GitSetup-${{ steps.get_version.outputs.VERSION }}
+        name: Vss2GitSetup-${{ env.VERSION }}
         path: Vss2GitSetup-*.exe
+
+  build-linux:
+    needs: version
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+      APP_ID: io.github.dimitar_grigorov.Vss2Git
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore Vss2Git.sln
+
+    - name: Build solution
+      run: dotnet build Vss2Git.sln --configuration Release --no-restore
+
+    - name: Run tests (excluding integration tests that require VSS tools)
+      run: dotnet test Vss2Git.Cli.Tests/Vss2Git.Cli.Tests.csproj --configuration Release --no-build --verbosity normal
+
+    - name: Publish CLI (linux-x64)
+      run: |
+        dotnet publish Vss2Git.Cli/Vss2Git.Cli.csproj \
+          --configuration Release \
+          --output release/Vss2Git.Cli-${{ env.VERSION }}-linux-x64 \
+          --self-contained false \
+          --runtime linux-x64
+
+    - name: Copy documentation to CLI package
+      run: cp README.md LICENSE.txt release/Vss2Git.Cli-${{ env.VERSION }}-linux-x64/
+
+    - name: Create CLI tarball
+      run: tar -czf release/Vss2Git.Cli-${{ env.VERSION }}-linux-x64.tar.gz -C release Vss2Git.Cli-${{ env.VERSION }}-linux-x64
+
+    - name: Publish GUI and CLI (self-contained linux-x64, for Flatpak)
+      run: |
+        dotnet publish Vss2Git.Avalonia/Vss2Git.Avalonia.csproj \
+          --configuration Release \
+          --output flatpak/publish-gui \
+          --self-contained true \
+          --runtime linux-x64
+        dotnet publish Vss2Git.Cli/Vss2Git.Cli.csproj \
+          --configuration Release \
+          --output flatpak/publish-cli \
+          --self-contained true \
+          --runtime linux-x64
+
+    - name: Extract PNG icon from ICO
+      run: |
+        pip install --quiet --break-system-packages Pillow
+        python3 -c "
+        from PIL import Image
+        im = Image.open('Vss2Git.Avalonia/Assets/Vss2Git.ico').convert('RGBA')
+        im.save('flatpak/${{ env.APP_ID }}.png')
+        "
+
+    - name: Install flatpak-builder
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y flatpak flatpak-builder
+        flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
+        flatpak install --user -y flathub org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08
+
+    - name: Build Flatpak bundle
+      run: |
+        flatpak-builder --user --disable-rofiles-fuse --force-clean --repo=flatpak/repo flatpak/build flatpak/${{ env.APP_ID }}.yaml
+        mkdir -p release
+        flatpak build-bundle flatpak/repo release/Vss2Git-${{ env.VERSION }}-linux-x64.flatpak ${{ env.APP_ID }}
+
+    - name: Upload CLI artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Vss2Git.Cli-${{ env.VERSION }}-linux-x64
+        path: release/Vss2Git.Cli-${{ env.VERSION }}-linux-x64.tar.gz
+
+    - name: Upload Flatpak artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Vss2Git-${{ env.VERSION }}-linux-x64-flatpak
+        path: release/Vss2Git-${{ env.VERSION }}-linux-x64.flatpak
+
+  release:
+    needs: [version, build-windows, build-linux]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          artifacts/**/*.zip
+          artifacts/**/*.tar.gz
+          artifacts/**/*.flatpak
+          artifacts/**/*.exe
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+        body: |
+          ## Vss2Git v${{ env.VERSION }}
+
+          ### Downloads
+          - **Vss2GitSetup-${{ env.VERSION }}.exe** - Windows installer (GUI + CLI, checks for .NET 10.0)
+          - **Vss2Git.Cli-${{ env.VERSION }}-win-x64.zip** - Windows command-line interface (portable ZIP)
+          - **Vss2Git-${{ env.VERSION }}-win-x64.zip** - Windows GUI application (portable ZIP)
+          - **Vss2Git-${{ env.VERSION }}-linux-x64.flatpak** - Linux GUI application (Flatpak bundle)
+          - **Vss2Git.Cli-${{ env.VERSION }}-linux-x64.tar.gz** - Linux command-line interface (portable tarball)
+
+          ### Requirements
+          - Windows: [.NET 10.0 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) (x64)
+          - Linux CLI: [.NET 10.0 Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) (x64); the Flatpak GUI bundles its own runtime
+          - Git must be in PATH (for the Process backend)
+
+          ### Installation
+          **Windows installer:** Run `Vss2GitSetup-${{ env.VERSION }}.exe` — choose GUI, CLI, or both.
+
+          **Windows portable:** Extract the ZIP and run `Vss2Git.Cli.exe --help` for CLI or `Vss2Git.exe` for GUI.
+
+          **Linux Flatpak:**
+          ```
+          flatpak install --user Vss2Git-${{ env.VERSION }}-linux-x64.flatpak
+          flatpak run io.github.dimitar_grigorov.Vss2Git
+          ```
+
+          **Linux CLI:** Extract the tarball and run `./Vss2Git.Cli --help`.
+
+          See [README.md](https://github.com/${{ github.repository }}/blob/master/README.md) for usage instructions.
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -34,7 +34,7 @@ namespace Hpdi.Vss2Git
         private readonly Logger logger;
         private readonly PerformanceTracker perfTracker;
         private readonly Stopwatch stopwatch = new Stopwatch();
-        private string gitExecutable = "git.exe";
+        private string gitExecutable = OperatingSystem.IsWindows() ? "git.exe" : "git";
         private string gitInitialArguments = null;
         private bool shellQuoting = false;
         private Encoding commitEncoding = Encoding.UTF8;

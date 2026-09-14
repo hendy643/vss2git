@@ -1,0 +1,94 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Hpdi.Vss2Git.Avalonia.MainWindow"
+        Title="VSS2Git"
+        Icon="avares://Vss2Git.Avalonia/Assets/Vss2Git.ico"
+        Width="760" SizeToContent="Height" MinWidth="650" MinHeight="480">
+    <Grid Margin="10,8,10,0" RowDefinitions="Auto,Auto,Auto">
+        <ScrollViewer Grid.Row="0">
+        <StackPanel Spacing="6">
+
+            <TextBlock Text="VSS Settings" FontWeight="Bold" Margin="0,0,0,2" />
+
+            <Grid ColumnDefinitions="130,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,0,0,4">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Directory" VerticalAlignment="Center" />
+                <TextBox Grid.Row="0" Grid.Column="1" Name="VssDirTextBox" Margin="0,2,6,2" />
+                <Button Grid.Row="0" Grid.Column="2" Name="VssDirBrowseButton" Content="..." Width="32" Click="VssDirBrowseButton_Click" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Project" VerticalAlignment="Center" />
+                <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Name="VssProjectTextBox" Margin="0,2,0,2" />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Exclude files" VerticalAlignment="Center" />
+                <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Name="ExcludeTextBox" Margin="0,2,0,2" />
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Encoding" VerticalAlignment="Center" />
+                <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Name="EncodingComboBox" Margin="0,2,0,2" HorizontalAlignment="Stretch" />
+            </Grid>
+
+            <Separator />
+
+            <TextBlock Text="Output Settings" FontWeight="Bold" Margin="0,2,0,2" />
+
+            <Grid ColumnDefinitions="130,*,Auto" Margin="0,0,0,4">
+                <TextBlock Grid.Column="0" Text="Directory" VerticalAlignment="Center" />
+                <TextBox Grid.Column="1" Name="OutDirTextBox" Margin="0,2,6,2" />
+                <Button Grid.Column="2" Name="OutDirBrowseButton" Content="..." Width="32" Click="OutDirBrowseButton_Click" />
+            </Grid>
+
+            <Grid ColumnDefinitions="130,*,80,*">
+                <TextBlock Grid.Column="0" Text="Email domain" VerticalAlignment="Center" />
+                <TextBox Grid.Column="1" Name="DomainTextBox" Margin="0,2,10,2" />
+                <TextBlock Grid.Column="2" Text="Log file" VerticalAlignment="Center" />
+                <TextBox Grid.Column="3" Name="LogTextBox" Margin="0,2,0,2" />
+            </Grid>
+
+            <Grid ColumnDefinitions="130,*">
+                <TextBlock Grid.Column="0" Text="Default comment" VerticalAlignment="Center" />
+                <TextBox Grid.Column="1" Name="CommentTextBox" Margin="0,2,0,2" />
+            </Grid>
+
+            <WrapPanel Margin="0,4,0,0">
+                <CheckBox Name="TranscodeCheckBox" Content="Transcode comments to UTF-8" Margin="0,0,16,4" />
+                <CheckBox Name="ForceAnnotatedCheckBox" Content="Force use of annotated tag objects" Margin="0,0,16,4" />
+                <CheckBox Name="IgnoreErrorsCheckBox" Content="Ignore Git errors" Margin="0,0,16,4" />
+                <CheckBox Name="ExportProjectToGitRootCheckBox" Content="Export project to Git root" Margin="0,0,16,4" />
+            </WrapPanel>
+
+            <Grid ColumnDefinitions="Auto,Auto,20,Auto,Auto,*,Auto,Auto" Margin="0,2,0,4">
+                <CheckBox Grid.Column="0" Name="FromDateCheckBox" Content="From date" VerticalAlignment="Center"
+                          IsCheckedChanged="FromDateCheckBox_IsCheckedChanged" />
+                <CalendarDatePicker Grid.Column="1" Name="FromDatePicker" IsEnabled="False" Width="140" Margin="4,0,0,0" />
+
+                <CheckBox Grid.Column="3" Name="ToDateCheckBox" Content="To date" VerticalAlignment="Center"
+                          IsCheckedChanged="ToDateCheckBox_IsCheckedChanged" />
+                <CalendarDatePicker Grid.Column="4" Name="ToDatePicker" IsEnabled="False" Width="140" Margin="4,0,0,0" />
+
+                <TextBlock Grid.Column="6" Text="Git backend" VerticalAlignment="Center" Margin="0,0,6,0" />
+                <ComboBox Grid.Column="7" Name="GitBackendComboBox" MinWidth="120" />
+            </Grid>
+
+            <WrapPanel Margin="0,2,0,4" VerticalAlignment="Center">
+                <TextBlock Text="Combine revisions within" VerticalAlignment="Center" Margin="0,0,6,4" />
+                <NumericUpDown Name="AnyCommentUpDown" Minimum="0" Maximum="86400" Width="130" Margin="0,0,6,4" />
+                <TextBlock Text="seconds regardless of comment, or" VerticalAlignment="Center" Margin="0,0,6,4" />
+                <NumericUpDown Name="SameCommentUpDown" Minimum="0" Maximum="86400" Width="130" Margin="0,0,6,4" />
+                <TextBlock Text="seconds if same comment" VerticalAlignment="Center" Margin="0,0,0,4" />
+            </WrapPanel>
+
+        </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,4,0,6">
+            <Button Name="GoButton" Content="Go!" MinWidth="80" Click="GoButton_Click" />
+            <Button Name="CancelButton" Content="Cancel" MinWidth="80" IsEnabled="False" Click="CancelButton_Click" />
+        </StackPanel>
+
+        <Grid Grid.Row="2" Margin="0,4,0,6" ColumnDefinitions="*,Auto,Auto,Auto,Auto">
+            <TextBlock Grid.Column="0" Name="StatusLabel" Text="Idle" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="1" Name="FileLabel" Text="Files: 0" Margin="16,0,0,0" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="2" Name="RevisionLabel" Text="Revisions: 0" Margin="16,0,0,0" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="3" Name="ChangeLabel" Text="Changesets: 0" Margin="16,0,0,0" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="4" Name="TimeLabel" Text="Elapsed: 00:00:00" Margin="16,0,0,0" VerticalAlignment="Center" />
+        </Grid>
+    </Grid>
+</Window>

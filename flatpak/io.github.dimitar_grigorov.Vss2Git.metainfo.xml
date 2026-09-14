@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.dimitar_grigorov.Vss2Git</id>
+  <name>Vss2Git</name>
+  <summary>Migrate a Visual SourceSafe database to Git</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>Apache-2.0</project_license>
+  <description>
+    <p>
+      Vss2Git replays the full history of a Visual SourceSafe 6.0 database
+      into a new Git repository, preserving renames, moves, deletes and
+      labels, instead of just dumping the latest version of every file.
+    </p>
+  </description>
+  <launchable type="desktop-id">io.github.dimitar_grigorov.Vss2Git.desktop</launchable>
+  <url type="homepage">https://github.com/dimitar-grigorov/vss2git</url>
+  <content_rating type="oars-1.1" />
+</component>
